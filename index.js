@@ -11,6 +11,9 @@ const axios = require("axios");
 
 console.log("Loaded ENV TOKEN:", process.env.DISCORD_TOKEN?.slice(0, 10));
 
+const cooldowns = new Map();
+const COOLDOWN_TIME = 3000; // 3 seconds (in milliseconds)
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -28,7 +31,7 @@ client.on("messageCreate", async (message) => {
 
   const args = message.content.slice(6).trim().split(" ");
   const format = args.shift()?.toLowerCase();
-  const query = args.join(" ");
+  const query = args.join(" ").replace(/[^\w\s\-’:!'.]/gi, "");
 
   if (!format || !query) {
     return message.reply("Usage: `!card <format> <card name>`");
@@ -64,6 +67,28 @@ client.on("messageCreate", async (message) => {
 
       value: index.toString(),
     }));
+
+    const now = Date.now();
+    const userId = message.author.id;
+
+    if (cooldowns.has(userId)) {
+      const expiration = cooldowns.get(userId);
+      const remaining = expiration - now;
+
+      if (remaining > 0) {
+        return message.reply(
+          `⏳ Please wait ${Math.ceil(
+            remaining / 1000
+          )} more second(s) before using this command again.`
+        );
+      }
+    }
+
+    // Set cooldown
+    cooldowns.set(userId, now + COOLDOWN_TIME);
+
+    // Optional: Auto-cleanup the Map entry later
+    setTimeout(() => cooldowns.delete(userId), COOLDOWN_TIME);
 
     const selectMenu = new StringSelectMenuBuilder()
       .setCustomId("card_select")
