@@ -58,7 +58,10 @@ client.on("messageCreate", async (message) => {
 
     const options = cards.map((card, index) => ({
       label: `${card.name} (${card.set?.name ?? "Unknown Set"})`,
-      description: `Reg Mark: ${card.regulationMark ?? "?"}`,
+      description: `Reg Mark: ${card.regulationMark ?? "?"} • Rarity: ${
+        card.rarity ?? "Unknown"
+      }`,
+
       value: index.toString(),
     }));
 
