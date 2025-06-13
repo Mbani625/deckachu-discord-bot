@@ -1,3 +1,4 @@
+//this will be for loading
 const {
   Client,
   GatewayIntentBits,
