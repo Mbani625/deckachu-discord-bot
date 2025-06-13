@@ -9,6 +9,8 @@ const {
 require("dotenv").config();
 const axios = require("axios");
 
+console.log("Loaded ENV TOKEN:", process.env.DISCORD_TOKEN?.slice(0, 10));
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
