@@ -133,11 +133,4 @@ client.on(Events.InteractionCreate, async (interaction) => {
   });
 });
 
-if (!process.env.DISCORD_TOKEN) {
-  console.error(
-    "❌ DISCORD_TOKEN is missing. Check your environment variables."
-  );
-  process.exit(1);
-}
-
 client.login(process.env.DISCORD_TOKEN);
