@@ -155,41 +155,49 @@ Examples:
   }
 
   if (
-    interaction.isStringSelectMenu() &&
-    interaction.customId === "card_select"
-  ) {
-    const cache = client.userCardCache?.get(interaction.user.id);
-    const index = parseInt(interaction.values[0], 10);
-    const card = cache?.cards?.[index];
+  interaction.isStringSelectMenu() &&
+  interaction.customId === "card_select"
+) {
+  const cache = client.userCardCache?.get(interaction.user.id);
+  const index = parseInt(interaction.values[0], 10);
+  const card = cache?.cards?.[index];
 
-    if (!card) {
-      return interaction.reply({
-        content: "❌ Card expired.",
-        flags: MessageFlags.Ephemeral,
-      });
-    }
-
-    const imageUrl = getBestImageUrl(card.images);
-
+  if (!card) {
     return interaction.reply({
-      content: `**${card.name}**
-Expansion: ${getExpansionName(card)}
-Type: ${card.supertype ?? "Unknown"}${
-        card.subtypes?.length ? ` – ${card.subtypes.join(", ")}` : ""
-      }
-Regulation: ${card.regulationMark ?? "?"}
-Number: ${card.printedNumber ?? card.number ?? "?"}`,
-      embeds: imageUrl
-        ? [
-            {
-              image: {
-                url: imageUrl,
-              },
-            },
-          ]
-        : [],
+      content: "❌ Card expired.",
+      flags: MessageFlags.Ephemeral,
     });
   }
+
+  const imageUrl = getBestImageUrl(card.images);
+
+  // 🔹 Step 1: Remove the dropdown UI
+  await interaction.update({
+    content: "🧹 Cleaning up...",
+    components: [],
+  });
+
+  // 🔹 Step 2: Send the actual card publicly
+  return interaction.followUp({
+    content: `**${card.name}**
+Expansion: ${getExpansionName(card)}
+Type: ${card.supertype ?? "Unknown"}${
+      card.subtypes?.length ? ` – ${card.subtypes.join(", ")}` : ""
+    }
+Regulation: ${card.regulationMark ?? "?"}
+Number: ${card.printedNumber ?? card.number ?? "?"}`,
+    embeds: imageUrl
+      ? [
+          {
+            image: {
+              url: imageUrl,
+            },
+          },
+        ]
+      : [],
+    ephemeral: false,
+  });
+}
 
   if (interaction.isButton()) {
     const cache = client.userCardCache?.get(interaction.user.id);
