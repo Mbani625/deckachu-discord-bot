@@ -25,21 +25,24 @@ const SCRYDEX_BASE =
   "https://api.scrydex.com/pokemon/v1/en/cards";
 
 async function fetchCards(query) {
-  const { data } = await axios.get(SCRYDEX_BASE, {
+  const response = await axios.get(SCRYDEX_BASE, {
     headers: {
       "X-Api-Key": process.env.SCRYDEX_API_KEY,
       "X-Team-ID": process.env.SCRYDEX_TEAM_ID,
     },
     params: {
       q: `name:"${query}"`,
-      page_size: 50,
-      select:
-        "id,name,images,set,rarity,regulation_mark,supertype,subtypes",
+      page_size: 25,
+      select: "id,name,images,set,rarity,regulation_mark,supertype,subtypes",
       casing: "camel",
     },
   });
 
-  return data.data || [];
+  console.log("Scrydex status:", response.status);
+  console.log("Scrydex response keys:", Object.keys(response.data || {}));
+  console.log("Scrydex sample:", JSON.stringify(response.data, null, 2).slice(0, 1000));
+
+  return response.data?.data || [];
 }
 
 client.on(Events.InteractionCreate, async (interaction) => {
