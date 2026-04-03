@@ -32,7 +32,7 @@ async function fetchCards(query) {
     },
     params: {
       q: `name:"${query}"`,
-      page_size: 25,
+      page_size: 250,
       select:
         "id,name,supertype,subtypes,rarity,regulation_mark,images,expansion,printed_number,number",
       casing: "camel",
@@ -58,11 +58,25 @@ function getExpansionName(card) {
   return card?.expansion?.name || "Unknown";
 }
 
+function getFormatLabel(format) {
+  switch (format) {
+    case "standard":
+      return "standard";
+    case "expanded":
+      return "expanded";
+    case "unlimited":
+      return "unlimited";
+    case "all":
+    default:
+      return "all printings";
+  }
+}
+
 client.on(Events.InteractionCreate, async (interaction) => {
   if (interaction.isChatInputCommand()) {
     if (interaction.commandName === "card") {
-      const format = interaction.options.getString("format").toLowerCase();
       const query = interaction.options.getString("name");
+      const format = (interaction.options.getString("format") || "all").toLowerCase();
 
       await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
@@ -76,13 +90,18 @@ client.on(Events.InteractionCreate, async (interaction) => {
               c.regulationMark &&
               c.regulationMark.toUpperCase() >= minMark
           );
+        } else if (format === "expanded") {
+          // Soft placeholder until stricter legality data is added
+          cards = cards.filter((c) => !!c.regulationMark);
+        } else if (format === "unlimited") {
+          // No extra filtering for now
+        } else if (format === "all") {
+          // No extra filtering
         }
 
         if (!cards.length) {
           return interaction.editReply(`❌ No cards found for "${query}".`);
         }
-
-        cards = cards.slice(0, 250);
 
         client.userCardCache = client.userCardCache || new Map();
         client.userCardCache.set(interaction.user.id, {
@@ -95,9 +114,10 @@ client.on(Events.InteractionCreate, async (interaction) => {
         }, 10 * 60 * 1000);
 
         const totalPages = Math.ceil(cards.length / 25);
+        const formatLabel = getFormatLabel(format);
 
         return interaction.editReply({
-          content: `🔍 Found cards for "${query}" (${format}) — Page 1/${totalPages}`,
+          content: `🔍 Found cards for "${query}" (${formatLabel}) — Page 1/${totalPages}`,
           components: [buildMenu(cards, 0), buildButtons(0, totalPages)],
         });
       } catch (err) {
@@ -115,10 +135,18 @@ client.on(Events.InteractionCreate, async (interaction) => {
         content: `🧠 **Deckachu Help**
 
 Use:
-/card format:<standard|expanded> name:<card>
+/card name:<card> format:<optional>
 
-Example:
-/card format:standard name:Charizard`,
+Format options:
+- All Printings
+- Standard
+- Expanded
+- Unlimited
+
+Examples:
+/card name:Charizard
+/card name:Charizard format:Standard
+/card name:Pikachu format:All Printings`,
         flags: MessageFlags.Ephemeral,
       });
     }
@@ -151,14 +179,15 @@ Type: ${card.supertype ?? "Unknown"}${
       }
 Regulation: ${card.regulationMark ?? "?"}
 Number: ${card.printedNumber ?? card.number ?? "?"}`,
-      files: imageUrl
-  ? [
-      {
-        attachment: imageUrl,
-        name: "card.png",
-      },
-    ]
-  : [],
+      embeds: imageUrl
+        ? [
+            {
+              image: {
+                url: imageUrl,
+              },
+            },
+          ]
+        : [],
     });
   }
 
