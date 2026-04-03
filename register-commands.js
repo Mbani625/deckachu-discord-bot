@@ -4,34 +4,36 @@ require("dotenv").config();
 const commands = [
   new SlashCommandBuilder()
     .setName("card")
-    .setDescription("Search for a card by name and format")
+    .setDescription("Search for a Pokémon card")
     .addStringOption((option) =>
       option
         .setName("format")
-        .setDescription("Format: standard, expanded, etc.")
+        .setDescription("Format")
         .setRequired(true)
+        .addChoices(
+          { name: "standard", value: "standard" },
+          { name: "expanded", value: "expanded" }
+        )
     )
     .addStringOption((option) =>
       option
         .setName("name")
-        .setDescription("The name of the card")
+        .setDescription("Card name")
         .setRequired(true)
     ),
   new SlashCommandBuilder()
     .setName("help")
-    .setDescription("Learn how to use the bot and its commands"),
-].map((cmd) => cmd.toJSON());
+    .setDescription("Show help"),
+].map((c) => c.toJSON());
 
-const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
+const rest = new REST({ version: "10" }).setToken(
+  process.env.DISCORD_TOKEN
+);
 
 (async () => {
-  try {
-    console.log("Registering slash commands...");
-    await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), {
-      body: commands,
-    });
-    console.log("Successfully registered slash commands.");
-  } catch (error) {
-    console.error(error);
-  }
+  await rest.put(
+    Routes.applicationCommands(process.env.CLIENT_ID),
+    { body: commands }
+  );
+  console.log("✅ Commands registered");
 })();
