@@ -98,9 +98,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
         ],
       });
     } catch (err) {
-      console.error(err);
-      return interaction.editReply("⚠️ Error fetching cards.");
-    }
+  console.error("Scrydex fetch failed");
+  console.error("Message:", err.message);
+  console.error("Status:", err.response?.status);
+  console.error("Data:", JSON.stringify(err.response?.data, null, 2));
+
+  return interaction.editReply("⚠️ Error fetching cards.");
+}
   }
 
   // ======================
