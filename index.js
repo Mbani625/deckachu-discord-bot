@@ -171,13 +171,16 @@ Examples:
 
   const imageUrl = getBestImageUrl(card.images);
 
-  // 🔹 Step 1: Remove the dropdown UI
-  await interaction.update({
-    content: "🧹 Cleaning up...",
-    components: [],
-  });
+  // Acknowledge the component click quickly
+  await interaction.deferUpdate();
 
-  // 🔹 Step 2: Send the actual card publicly
+  // Delete the original ephemeral dropdown message
+  await interaction.deleteReply();
+
+  // Optional: clear cache immediately
+  client.userCardCache.delete(interaction.user.id);
+
+  // Send the final public card message
   return interaction.followUp({
     content: `**${card.name}**
 Expansion: ${getExpansionName(card)}
@@ -195,7 +198,6 @@ Number: ${card.printedNumber ?? card.number ?? "?"}`,
           },
         ]
       : [],
-    ephemeral: false,
   });
 }
 
