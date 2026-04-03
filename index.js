@@ -151,7 +151,14 @@ Type: ${card.supertype ?? "Unknown"}${
       }
 Regulation: ${card.regulationMark ?? "?"}
 Number: ${card.printedNumber ?? card.number ?? "?"}`,
-      files: imageUrl ? [imageUrl] : [],
+      files: imageUrl
+  ? [
+      {
+        attachment: imageUrl,
+        name: "card.png",
+      },
+    ]
+  : [],
     });
   }
 
