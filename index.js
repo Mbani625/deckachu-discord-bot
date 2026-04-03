@@ -33,25 +33,32 @@ async function fetchCards(query) {
     params: {
       q: `name:"${query}"`,
       page_size: 25,
-      select: "id,name,images,set,rarity,regulation_mark,supertype,subtypes",
+      select:
+        "id,name,supertype,subtypes,rarity,regulation_mark,images,expansion,printed_number,number",
       casing: "camel",
     },
   });
 
   console.log("Scrydex status:", response.status);
-  console.log("Scrydex response keys:", Object.keys(response.data || {}));
-  console.log(
-    "Scrydex sample:",
-    JSON.stringify(response.data, null, 2).slice(0, 1000)
-  );
-
   return response.data?.data || [];
 }
 
+function getBestImageUrl(images) {
+  if (!images) return null;
+
+  if (Array.isArray(images)) {
+    const frontImage = images.find((img) => img.type === "front") || images[0];
+    return frontImage?.large || frontImage?.medium || frontImage?.small || null;
+  }
+
+  return null;
+}
+
+function getExpansionName(card) {
+  return card?.expansion?.name || "Unknown";
+}
+
 client.on(Events.InteractionCreate, async (interaction) => {
-  // ======================
-  // 🎴 SLASH COMMANDS
-  // ======================
   if (interaction.isChatInputCommand()) {
     if (interaction.commandName === "card") {
       const format = interaction.options.getString("format").toLowerCase();
@@ -119,9 +126,6 @@ Example:
     return;
   }
 
-  // ======================
-  // 🎯 SELECT CARD
-  // ======================
   if (
     interaction.isStringSelectMenu() &&
     interaction.customId === "card_select"
@@ -137,26 +141,20 @@ Example:
       });
     }
 
-    console.log("Selected card images:", JSON.stringify(card.images, null, 2));
-
-    const files = [];
-    if (card.images?.large) files.push(card.images.large);
-    else if (card.images?.small) files.push(card.images.small);
+    const imageUrl = getBestImageUrl(card.images);
 
     return interaction.reply({
       content: `**${card.name}**
-Set: ${card.set?.name ?? "Unknown"}
+Expansion: ${getExpansionName(card)}
 Type: ${card.supertype ?? "Unknown"}${
         card.subtypes?.length ? ` – ${card.subtypes.join(", ")}` : ""
       }
-Regulation: ${card.regulationMark ?? "?"}`,
-      files,
+Regulation: ${card.regulationMark ?? "?"}
+Number: ${card.printedNumber ?? card.number ?? "?"}`,
+      files: imageUrl ? [imageUrl] : [],
     });
   }
 
-  // ======================
-  // 🔁 PAGINATION
-  // ======================
   if (interaction.isButton()) {
     const cache = client.userCardCache?.get(interaction.user.id);
 
@@ -182,9 +180,6 @@ Regulation: ${card.regulationMark ?? "?"}`,
   }
 });
 
-// ======================
-// 🧩 UI BUILDERS
-// ======================
 function buildMenu(cards, page) {
   const start = page * 25;
 
@@ -194,7 +189,7 @@ function buildMenu(cards, page) {
       .setPlaceholder("Choose a card")
       .addOptions(
         cards.slice(start, start + 25).map((c, i) => ({
-          label: `${c.name} (${c.set?.name ?? "Set"})`,
+          label: `${c.name} (${getExpansionName(c)})`,
           description: `Reg: ${c.regulationMark ?? "?"}`,
           value: (start + i).toString(),
         }))
