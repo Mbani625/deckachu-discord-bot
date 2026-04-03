@@ -84,7 +84,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
         let cards = await fetchCards(query);
 
         if (format === "standard") {
-          const minMark = process.env.STANDARD_REG_MARK_MIN || "G";
+          const minMark = process.env.STANDARD_REG_MARK_MIN || "H";
           cards = cards.filter(
             (c) =>
               c.regulationMark &&
