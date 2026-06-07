@@ -45,13 +45,15 @@ const API_ENDPOINTS = {
 async function fetchCards(game, query) {
   const endpoint = API_ENDPOINTS[game] || API_ENDPOINTS.pokemon;
 
+  const safeQuery = escapeScrydexQuery(query);
+
   const response = await axios.get(endpoint, {
     headers: {
       "X-Api-Key": process.env.SCRYDEX_API_KEY,
       "X-Team-ID": process.env.SCRYDEX_TEAM_ID,
     },
     params: {
-      q: `name:"${query}"`,
+      q: `name:"${safeQuery}"`,
       page_size: 250,
       casing: "camel",
 
