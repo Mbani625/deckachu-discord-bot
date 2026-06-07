@@ -20,7 +20,7 @@ const commands = [
       option
         .setName("format")
         .setDescription("Choose a format filter")
-        .setRequired(false)
+        .setRequired(true)
         .addChoices(
           { name: "All Printings", value: "all" },
           { name: "Pokemon Standard", value: "standard" },
