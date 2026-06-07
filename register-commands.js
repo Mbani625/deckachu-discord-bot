@@ -5,12 +5,7 @@ const commands = [
   new SlashCommandBuilder()
     .setName("card")
     .setDescription("Search for a card")
-    .addStringOption((option) =>
-      option
-        .setName("name")
-        .setDescription("Card name")
-        .setRequired(true)
-    )
+    
     .addStringOption((option) =>
       option
         .setName("game")
@@ -28,10 +23,16 @@ const commands = [
         .setRequired(false)
         .addChoices(
           { name: "All Printings", value: "all" },
-          { name: "Standard", value: "standard" },
-          { name: "Expanded", value: "expanded" },
-          { name: "Unlimited", value: "unlimited" }
+          { name: "Pokemon Standard", value: "standard" },
+          { name: "Pokemon Expanded", value: "expanded" },
+          { name: "Pokemon Unlimited", value: "unlimited" }
         )
+    )
+    .addStringOption((option) =>
+      option
+        .setName("name")
+        .setDescription("Card name")
+        .setRequired(true)
     ),
 
   new SlashCommandBuilder()
