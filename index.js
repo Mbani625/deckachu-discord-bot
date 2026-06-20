@@ -81,6 +81,13 @@ function titleCase(value) {
     .join(" ");
 }
 
+function formatPokemonFormName(apiName) {
+  return apiName
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 function formatList(items) {
   return items.length ? items.map(titleCase).join(", ") : "None";
 }
@@ -91,6 +98,31 @@ function cleanEffectText(text) {
     .replace(/\f/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+async function fetchPokemonForms(query) {
+  const pokemonName = normalizePokemonName(query);
+
+  const pokemonResponse = await axios.get(
+    `${API_ENDPOINTS.pokemonVgc}/pokemon/${encodeURIComponent(pokemonName)}`
+  );
+
+  const speciesResponse = await axios.get(pokemonResponse.data.species.url);
+
+  const forms = speciesResponse.data.varieties.map((variety) => ({
+    name: formatPokemonFormName(variety.pokemon.name),
+    apiName: variety.pokemon.name,
+  }));
+
+  const selectedName = pokemonResponse.data.name;
+
+  forms.sort((a, b) => {
+    if (a.apiName === selectedName) return -1;
+    if (b.apiName === selectedName) return 1;
+    return a.name.localeCompare(b.name);
+  });
+
+  return forms;
 }
 
 async function fetchPokemonVgc(query) {
@@ -143,9 +175,13 @@ async function fetchPokemonVgc(query) {
   const immunities = [];
 
   for (const [type, multiplier] of defensiveMultipliers.entries()) {
-    if (multiplier === 0) immunities.push(type);
-    else if (multiplier > 1) weaknesses.push(multiplier === 4 ? `${type} (4x)` : type);
-    else if (multiplier < 1) resistances.push(multiplier === 0.25 ? `${type} (¼x)` : type);
+    if (multiplier === 0) {
+      immunities.push(type);
+    } else if (multiplier > 1) {
+      weaknesses.push(multiplier === 4 ? `${type} (4x)` : type);
+    } else if (multiplier < 1) {
+      resistances.push(multiplier === 0.25 ? `${type} (¼x)` : type);
+    }
   }
 
   const abilities = abilityResponses.map((abilityResponse, index) => {
@@ -165,7 +201,7 @@ async function fetchPokemonVgc(query) {
   });
 
   return {
-    name: titleCase(pokemon.name),
+    name: formatPokemonFormName(pokemon.name),
     types: typeNames,
     stats,
     weaknesses: weaknesses.sort(),
@@ -240,8 +276,30 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
       try {
         if (game === "pokemon_vgc") {
-          const pokemonVgcData = await fetchPokemonVgc(query);
-          return interaction.editReply(buildPokemonVgcResponse(pokemonVgcData));
+          const forms = await fetchPokemonForms(query);
+
+          client.userCardCache = client.userCardCache || new Map();
+
+          client.userCardCache.set(interaction.user.id, {
+            forms,
+            game: "pokemon_vgc",
+            isVgc: true,
+          });
+
+          setTimeout(() => {
+            client.userCardCache?.delete(interaction.user.id);
+          }, 10 * 60 * 1000);
+
+          if (forms.length === 1) {
+            const pokemonVgcData = await fetchPokemonVgc(forms[0].apiName);
+            client.userCardCache.delete(interaction.user.id);
+            return interaction.editReply(buildPokemonVgcResponse(pokemonVgcData));
+          }
+
+          return interaction.editReply({
+            content: `⚔️ Found ${forms.length} form(s) for "${query}". Choose one:`,
+            components: [buildVgcMenu(forms)],
+          });
         }
 
         let cards = await fetchCards(game, query);
@@ -292,7 +350,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
         if (game === "pokemon_vgc") {
           return interaction.editReply(
-            `⚠️ Error fetching VGC info for "${query}". Try the PokéAPI name format, like "Indeedee-Female", "Urshifu-Rapid-Strike", or "Flutter Mane".`
+            `⚠️ Error fetching VGC info for "${query}". Try a simpler name like "Metagross", "Charizard", "Mawile", or "Garchomp".`
           );
         }
 
@@ -326,13 +384,46 @@ Pokémon TCG Formats:
 
 Examples:
 • /card game:Pokemon name:Charizard format:Pokemon Standard
-• /card game:Pokemon VGC name:Garchomp
+• /card game:Pokemon VGC name:Metagross
 • /card game:Riftbound name:Jinx
 `,
       });
     }
 
     return;
+  }
+
+  if (
+    interaction.isStringSelectMenu() &&
+    interaction.customId === "vgc_select"
+  ) {
+    const cache = client.userCardCache?.get(interaction.user.id);
+
+    if (!cache?.isVgc) {
+      return interaction.reply({
+        content: "Expired.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
+    try {
+      const selected = cache.forms[parseInt(interaction.values[0], 10)];
+      const pokemonVgcData = await fetchPokemonVgc(selected.apiName);
+
+      client.userCardCache.delete(interaction.user.id);
+
+      return interaction.update({
+        content: buildPokemonVgcResponse(pokemonVgcData).content,
+        components: [],
+      });
+    } catch (err) {
+      console.error(err);
+
+      return interaction.update({
+        content: "⚠️ Error fetching that Pokémon form.",
+        components: [],
+      });
+    }
   }
 
   if (interaction.isStringSelectMenu() && interaction.customId === "card_select") {
@@ -405,6 +496,20 @@ Examples:
     });
   }
 });
+
+function buildVgcMenu(forms) {
+  return new ActionRowBuilder().addComponents(
+    new StringSelectMenuBuilder()
+      .setCustomId("vgc_select")
+      .setPlaceholder("Choose a Pokémon form")
+      .addOptions(
+        forms.slice(0, 25).map((form, index) => ({
+          label: form.name.substring(0, 100),
+          value: index.toString(),
+        }))
+      )
+  );
+}
 
 function buildMenu(cards, page, game) {
   const start = page * 25;
