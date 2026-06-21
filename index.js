@@ -279,7 +279,9 @@ async function handleVgcMove(interaction, name) {
     });
   }
 
-  return interaction.editReply({
+  await interaction.deleteReply();
+
+  return interaction.channel.send({
     embeds: [
       {
         title: move.name || toTitleCase(name),
@@ -342,7 +344,9 @@ async function handleVgcItem(interaction, name) {
     });
   }
 
-  return interaction.editReply({
+  await interaction.deleteReply();
+
+  return interaction.channel.send({
     embeds: [
       {
         title: item.name || toTitleCase(name),
