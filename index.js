@@ -23,12 +23,6 @@ client.once("ready", () => {
   console.log(`✅ Deckachu online as ${client.user.tag}`);
 });
 
-/*
-|--------------------------------------------------------------------------
-| API ENDPOINTS
-|--------------------------------------------------------------------------
-*/
-
 const API_ENDPOINTS = {
   pokemon:
     process.env.POKEMON_API_URL ||
@@ -38,12 +32,6 @@ const API_ENDPOINTS = {
     process.env.RIFTBOUND_API_URL ||
     "https://api.scrydex.com/riftbound/v1/cards",
 };
-
-/*
-|--------------------------------------------------------------------------
-| LOCAL VGC DATA
-|--------------------------------------------------------------------------
-*/
 
 function loadJson(filePath) {
   try {
@@ -58,12 +46,6 @@ function loadJson(filePath) {
 const VGC_MOVES = loadJson(path.join(__dirname, "data", "vgc-moves.json"));
 const VGC_ITEMS = loadJson(path.join(__dirname, "data", "vgc-items.json"));
 
-/*
-|--------------------------------------------------------------------------
-| FETCH CARDS
-|--------------------------------------------------------------------------
-*/
-
 async function fetchCards(game, query) {
   const endpoint = API_ENDPOINTS[game] || API_ENDPOINTS.pokemon;
 
@@ -76,7 +58,6 @@ async function fetchCards(game, query) {
       q: query,
       page_size: 250,
       casing: "camel",
-
       select:
         game === "riftbound"
           ? "id,name,images,rarity,type,domain,cardText"
@@ -84,16 +65,8 @@ async function fetchCards(game, query) {
     },
   });
 
-  console.log(`${game} status:`, response.status);
-
   return response.data?.data || [];
 }
-
-/*
-|--------------------------------------------------------------------------
-| POKEAPI FALLBACKS
-|--------------------------------------------------------------------------
-*/
 
 async function fetchMoveFromPokeApi(name) {
   const slug = toPokeApiSlug(name);
@@ -117,7 +90,6 @@ async function fetchMoveFromPokeApi(name) {
       englishEffect?.effect ||
       englishEffect?.flavor_text ||
       "No effect text found.",
-    source: "PokéAPI fallback",
   };
 }
 
@@ -137,15 +109,8 @@ async function fetchItemFromPokeApi(name) {
       englishEffect?.effect ||
       englishEffect?.flavor_text ||
       "No effect text found.",
-    source: "PokéAPI fallback",
   };
 }
-
-/*
-|--------------------------------------------------------------------------
-| HELPERS
-|--------------------------------------------------------------------------
-*/
 
 function normalizeName(name) {
   return String(name || "")
@@ -194,7 +159,6 @@ function getBestImageUrl(images) {
 
   if (Array.isArray(images)) {
     const front = images.find((img) => img.type === "front") || images[0];
-
     return front?.large || front?.medium || front?.small || null;
   }
 
@@ -209,23 +173,40 @@ function getFormatLabel(format) {
   switch (format) {
     case "standard":
       return "Standard";
-
     case "expanded":
       return "Expanded";
-
     case "unlimited":
       return "Unlimited";
-
     default:
       return "All Printings";
   }
 }
 
-/*
-|--------------------------------------------------------------------------
-| VGC LOOKUP HANDLERS
-|--------------------------------------------------------------------------
-*/
+async function sendPublicThenDeletePrivate(interaction, payload) {
+  try {
+    const channel = interaction.channel;
+
+    if (!channel) {
+      return interaction.editReply("⚠️ I could not find the channel to post in.");
+    }
+
+    await channel.send(payload);
+
+    try {
+      await interaction.deleteReply();
+    } catch (deleteErr) {
+      console.error("Could not delete private interaction reply:", deleteErr);
+    }
+
+    return;
+  } catch (sendErr) {
+    console.error("Could not send public message:", sendErr);
+
+    return interaction.editReply(
+      "⚠️ I found the reference, but I could not post it publicly. Check that Deckachu has permission to send messages in this channel."
+    );
+  }
+}
 
 async function handleVgcMove(interaction, name) {
   let move = findLocalEntry(VGC_MOVES, name);
@@ -279,9 +260,7 @@ async function handleVgcMove(interaction, name) {
     });
   }
 
-  await interaction.deleteReply();
-
-  return interaction.channel.send({
+  return sendPublicThenDeletePrivate(interaction, {
     embeds: [
       {
         title: move.name || toTitleCase(name),
@@ -344,9 +323,7 @@ async function handleVgcItem(interaction, name) {
     });
   }
 
-  await interaction.deleteReply();
-
-  return interaction.channel.send({
+  return sendPublicThenDeletePrivate(interaction, {
     embeds: [
       {
         title: item.name || toTitleCase(name),
@@ -357,31 +334,11 @@ async function handleVgcItem(interaction, name) {
   });
 }
 
-/*
-|--------------------------------------------------------------------------
-| INTERACTIONS
-|--------------------------------------------------------------------------
-*/
-
 client.on(Events.InteractionCreate, async (interaction) => {
-  /*
-  ------------------------------------------------------------------------
-  SLASH COMMANDS
-  ------------------------------------------------------------------------
-  */
-
   if (interaction.isChatInputCommand()) {
-    /*
-    ----------------------------------------------------------------------
-    /CARD
-    ----------------------------------------------------------------------
-    */
-
     if (interaction.commandName === "card") {
       const query = interaction.options.getString("name");
-
       const game = interaction.options.getString("game") || "pokemon";
-
       const format = interaction.options.getString("format") || "all";
 
       await interaction.deferReply({
@@ -390,12 +347,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
       try {
         let cards = await fetchCards(game, query);
-
-        /*
-        ------------------------------------------------------------------
-        POKEMON FORMAT FILTERING
-        ------------------------------------------------------------------
-        */
 
         if (game === "pokemon") {
           if (format === "standard") {
@@ -437,7 +388,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
             `🔍 Found ${cards.length} ${game} cards for "${query}"` +
             ` (${getFormatLabel(format)})` +
             ` • Page 1/${totalPages}`,
-
           components: [
             buildMenu(cards, 0, game),
             buildButtons(0, totalPages),
@@ -445,16 +395,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
         });
       } catch (err) {
         console.error(err);
-
         return interaction.editReply("⚠️ Error fetching cards.");
       }
     }
-
-    /*
-    ----------------------------------------------------------------------
-    /VGC
-    ----------------------------------------------------------------------
-    */
 
     if (interaction.commandName === "vgc") {
       const type = interaction.options.getString("type");
@@ -475,16 +418,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
       return interaction.editReply("❌ Unknown VGC lookup type.");
     }
 
-    /*
-    ----------------------------------------------------------------------
-    /HELP
-    ----------------------------------------------------------------------
-    */
-
     if (interaction.commandName === "help") {
       return interaction.reply({
         flags: MessageFlags.Ephemeral,
-
         content: `
 🧠 **Deckachu Help**
 
@@ -495,16 +431,6 @@ Options:
 • game
 • format
 • name
-
-Games:
-• Pokémon
-• Riftbound
-
-Formats:
-• All Printings
-• Pokémon Standard
-• Pokémon Expanded
-• Pokémon Unlimited
 
 Examples:
 • /card game:Pokémon format:All Printings name:Charizard
@@ -517,10 +443,6 @@ Options:
 • type
 • name
 
-Types:
-• Move
-• Item
-
 Examples:
 • /vgc type:Move name:Protect
 • /vgc type:Item name:Focus Sash
@@ -531,20 +453,12 @@ Examples:
     return;
   }
 
-  /*
-  ------------------------------------------------------------------------
-  CARD DROPDOWN
-  ------------------------------------------------------------------------
-  */
-
   if (
     interaction.isStringSelectMenu() &&
     interaction.customId === "card_select"
   ) {
     const cache = client.userCardCache?.get(interaction.user.id);
-
     const index = parseInt(interaction.values[0], 10);
-
     const card = cache?.cards?.[index];
 
     if (!card) {
@@ -557,69 +471,59 @@ Examples:
     const imageUrl = getBestImageUrl(card.images);
 
     await interaction.deferUpdate();
-    await interaction.deleteReply();
 
     client.userCardCache.delete(interaction.user.id);
 
-    /*
-    ----------------------------------------------------------------------
-    RIFTBOUND DISPLAY
-    ----------------------------------------------------------------------
-    */
+    const payload =
+      cache.game === "riftbound"
+        ? {
+            content:
+              `**${card.name}**\n` +
+              `Type: ${card.type ?? "Unknown"}\n` +
+              `Domain: ${card.domain ?? "Unknown"}\n` +
+              `Rarity: ${card.rarity ?? "Unknown"}\n\n` +
+              `${card.cardText ?? ""}`,
+            embeds: imageUrl
+              ? [
+                  {
+                    image: {
+                      url: imageUrl,
+                    },
+                  },
+                ]
+              : [],
+          }
+        : {
+            content:
+              `**${card.name}**\n` +
+              `Expansion: ${getExpansionName(card)}\n` +
+              `Type: ${card.supertype ?? "Unknown"}` +
+              `${
+                card.subtypes?.length ? ` – ${card.subtypes.join(", ")}` : ""
+              }\n` +
+              `Regulation: ${card.regulationMark ?? "?"}\n` +
+              `Number: ${card.printedNumber ?? card.number ?? "?"}`,
+            embeds: imageUrl
+              ? [
+                  {
+                    image: {
+                      url: imageUrl,
+                    },
+                  },
+                ]
+              : [],
+          };
 
-    if (cache.game === "riftbound") {
-      return interaction.followUp({
-        content:
-          `**${card.name}**\n` +
-          `Type: ${card.type ?? "Unknown"}\n` +
-          `Domain: ${card.domain ?? "Unknown"}\n` +
-          `Rarity: ${card.rarity ?? "Unknown"}\n\n` +
-          `${card.cardText ?? ""}`,
+    await interaction.channel.send(payload);
 
-        embeds: imageUrl
-          ? [
-              {
-                image: {
-                  url: imageUrl,
-                },
-              },
-            ]
-          : [],
-      });
+    try {
+      await interaction.deleteReply();
+    } catch (err) {
+      console.error("Could not delete card select reply:", err);
     }
 
-    /*
-    ----------------------------------------------------------------------
-    POKEMON DISPLAY
-    ----------------------------------------------------------------------
-    */
-
-    return interaction.followUp({
-      content:
-        `**${card.name}**\n` +
-        `Expansion: ${getExpansionName(card)}\n` +
-        `Type: ${card.supertype ?? "Unknown"}` +
-        `${card.subtypes?.length ? ` – ${card.subtypes.join(", ")}` : ""}\n` +
-        `Regulation: ${card.regulationMark ?? "?"}\n` +
-        `Number: ${card.printedNumber ?? card.number ?? "?"}`,
-
-      embeds: imageUrl
-        ? [
-            {
-              image: {
-                url: imageUrl,
-              },
-            }
-          ]
-        : [],
-    });
+    return;
   }
-
-  /*
-  ------------------------------------------------------------------------
-  PAGINATION
-  ------------------------------------------------------------------------
-  */
 
   if (interaction.isButton()) {
     const cache = client.userCardCache?.get(interaction.user.id);
@@ -632,7 +536,6 @@ Examples:
     }
 
     let { page, cards, game } = cache;
-
     const totalPages = Math.ceil(cards.length / 25);
 
     if (interaction.customId === "next") page++;
@@ -645,7 +548,6 @@ Examples:
 
     return interaction.update({
       content: `🔍 Found cards • Page ${page + 1}/${totalPages}`,
-
       components: [
         buildMenu(cards, page, game),
         buildButtons(page, totalPages),
@@ -653,12 +555,6 @@ Examples:
     });
   }
 });
-
-/*
-|--------------------------------------------------------------------------
-| MENU BUILDERS
-|--------------------------------------------------------------------------
-*/
 
 function buildMenu(cards, page, game) {
   const start = page * 25;
@@ -670,12 +566,10 @@ function buildMenu(cards, page, game) {
       .addOptions(
         cards.slice(start, start + 25).map((card, i) => ({
           label: card.name.substring(0, 100),
-
           description:
             game === "riftbound"
               ? `${card.type ?? "Card"}`
               : `Reg: ${card.regulationMark ?? "?"}`,
-
           value: (start + i).toString(),
         }))
       )
