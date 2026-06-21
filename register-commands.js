@@ -5,7 +5,7 @@ const commands = [
   new SlashCommandBuilder()
     .setName("card")
     .setDescription("Search for a card")
-    
+
     .addStringOption((option) =>
       option
         .setName("game")
@@ -16,6 +16,7 @@ const commands = [
           { name: "Riftbound", value: "riftbound" }
         )
     )
+
     .addStringOption((option) =>
       option
         .setName("format")
@@ -28,10 +29,33 @@ const commands = [
           { name: "Pokemon Unlimited", value: "unlimited" }
         )
     )
+
     .addStringOption((option) =>
       option
         .setName("name")
         .setDescription("Card name")
+        .setRequired(true)
+    ),
+
+  new SlashCommandBuilder()
+    .setName("vgc")
+    .setDescription("Look up Pokémon VGC moves and items")
+
+    .addStringOption((option) =>
+      option
+        .setName("type")
+        .setDescription("Choose reference type")
+        .setRequired(true)
+        .addChoices(
+          { name: "Move", value: "move" },
+          { name: "Item", value: "item" }
+        )
+    )
+
+    .addStringOption((option) =>
+      option
+        .setName("name")
+        .setDescription("Move or item name")
         .setRequired(true)
     ),
 

@@ -1,0 +1,359 @@
+{
+  "meta": {
+    "name": "Pokemon Champions Item Data",
+    "version": "0.1.0-champions-only",
+    "lastManualUpdate": "2026-06-20",
+    "notes": [
+      "Manual Champions-only item list.",
+      "This does not include every PokéAPI item.",
+      "Mega Stones can be added later as a separate category."
+    ],
+    "sources": [
+      "Game8 Pokemon Champions Items List",
+      "PokéBase Pokemon Champions Items List",
+      "Pokemon Database Champions item list discussion"
+    ]
+  },
+  "items": {
+    "black-belt": {
+      "key": "black-belt",
+      "name": "Black Belt",
+      "category": "held-item",
+      "cost": 700,
+      "description": "Boosts the power of Fighting-type moves.",
+      "flavorText": "A belt that helps the wearer focus and strengthens Fighting-type moves.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["black belt", "black-belt"]
+    },
+    "black-glasses": {
+      "key": "black-glasses",
+      "name": "Black Glasses",
+      "category": "held-item",
+      "cost": 700,
+      "description": "Boosts the power of Dark-type moves.",
+      "flavorText": "A pair of shady-looking glasses that strengthens Dark-type moves.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["black glasses", "black-glasses"]
+    },
+    "bright-powder": {
+      "key": "bright-powder",
+      "name": "Bright Powder",
+      "category": "held-item",
+      "cost": null,
+      "description": "Lowers the accuracy of moves targeting the holder.",
+      "flavorText": "A tricky powder that makes the holder harder to hit.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["bright powder", "bright-powder"]
+    },
+    "charcoal": {
+      "key": "charcoal",
+      "name": "Charcoal",
+      "category": "held-item",
+      "cost": 700,
+      "description": "Boosts the power of Fire-type moves.",
+      "flavorText": "A combustible fuel that strengthens Fire-type moves.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["charcoal"]
+    },
+    "choice-scarf": {
+      "key": "choice-scarf",
+      "name": "Choice Scarf",
+      "category": "held-item",
+      "cost": null,
+      "description": "Boosts Speed, but the holder can only use the first move it selects.",
+      "flavorText": "A curious scarf that boosts Speed but locks the holder into one move.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["choice scarf", "scarf", "choice-scarf"]
+    },
+    "chople-berry": {
+      "key": "chople-berry",
+      "name": "Chople Berry",
+      "category": "berry",
+      "cost": null,
+      "description": "Weakens one super-effective Fighting-type attack against the holder.",
+      "flavorText": "A Berry that lessens damage from one super-effective Fighting-type attack.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["chople berry", "chople-berry"]
+    },
+    "dragon-fang": {
+      "key": "dragon-fang",
+      "name": "Dragon Fang",
+      "category": "held-item",
+      "cost": 700,
+      "description": "Boosts the power of Dragon-type moves.",
+      "flavorText": "A hard, sharp fang that strengthens Dragon-type moves.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["dragon fang", "dragon-fang"]
+    },
+    "fairy-feather": {
+      "key": "fairy-feather",
+      "name": "Fairy Feather",
+      "category": "held-item",
+      "cost": 700,
+      "description": "Boosts the power of Fairy-type moves.",
+      "flavorText": "A feather that strengthens Fairy-type moves.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["fairy feather", "fairy-feather"]
+    },
+    "focus-band": {
+      "key": "focus-band",
+      "name": "Focus Band",
+      "category": "held-item",
+      "cost": null,
+      "description": "May allow the holder to survive an attack that would knock it out.",
+      "flavorText": "A headband that may let the holder endure a potential knockout.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["focus band", "focus-band"]
+    },
+    "focus-sash": {
+      "key": "focus-sash",
+      "name": "Focus Sash",
+      "category": "held-item",
+      "cost": null,
+      "description": "If the holder has full HP and would be knocked out, it survives with 1 HP. The item is consumed.",
+      "flavorText": "Lets a full-HP holder endure a potential knockout with 1 HP.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["focus sash", "sash", "focus-sash"]
+    },
+    "hard-stone": {
+      "key": "hard-stone",
+      "name": "Hard Stone",
+      "category": "held-item",
+      "cost": 700,
+      "description": "Boosts the power of Rock-type moves.",
+      "flavorText": "A durable stone that strengthens Rock-type moves.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["hard stone", "hard-stone"]
+    },
+    "icy-rock": {
+      "key": "icy-rock",
+      "name": "Icy Rock",
+      "category": "held-item",
+      "cost": null,
+      "description": "Extends snow caused by the holder.",
+      "flavorText": "When the holder changes the weather to snow, snow lasts longer.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["icy rock", "icy-rock"]
+    },
+    "iron-ball": {
+      "key": "iron-ball",
+      "name": "Iron Ball",
+      "category": "held-item",
+      "cost": null,
+      "description": "Lowers the holder's Speed and makes Flying or levitating holders vulnerable to Ground-type moves.",
+      "flavorText": "A heavy ball that slows the holder and grounds it.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["iron ball", "iron-ball"]
+    },
+    "kasib-berry": {
+      "key": "kasib-berry",
+      "name": "Kasib Berry",
+      "category": "berry",
+      "cost": null,
+      "description": "Weakens one super-effective Ghost-type attack against the holder.",
+      "flavorText": "A Berry that lessens damage from one super-effective Ghost-type attack.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["kasib berry", "kasib-berry"]
+    },
+    "kebia-berry": {
+      "key": "kebia-berry",
+      "name": "Kebia Berry",
+      "category": "berry",
+      "cost": null,
+      "description": "Weakens one super-effective Poison-type attack against the holder.",
+      "flavorText": "A Berry that lessens damage from one super-effective Poison-type attack.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["kebia berry", "kebia-berry"]
+    },
+    "kings-rock": {
+      "key": "kings-rock",
+      "name": "King's Rock",
+      "category": "held-item",
+      "cost": null,
+      "description": "Damaging moves may cause the target to flinch.",
+      "flavorText": "When the holder deals damage, the target may also flinch.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["king's rock", "kings rock", "king rock", "kings-rock"]
+    },
+    "leftovers": {
+      "key": "leftovers",
+      "name": "Leftovers",
+      "category": "held-item",
+      "cost": null,
+      "description": "Restores a small amount of HP every turn.",
+      "flavorText": "The holder's HP is slowly but steadily restored throughout battle.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["leftovers"]
+    },
+    "leppa-berry": {
+      "key": "leppa-berry",
+      "name": "Leppa Berry",
+      "category": "berry",
+      "cost": null,
+      "description": "Restores 10 PP to a depleted move.",
+      "flavorText": "A Berry that restores PP to one depleted move.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["leppa berry", "leppa-berry"]
+    },
+    "life-orb": {
+      "key": "life-orb",
+      "name": "Life Orb",
+      "category": "held-item",
+      "cost": null,
+      "description": "Boosts the power of damaging moves, but the holder loses HP after landing an attack.",
+      "flavorText": "Boosts move power, but the holder loses HP upon landing an attack.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["life orb", "orb", "life-orb"]
+    },
+    "light-ball": {
+      "key": "light-ball",
+      "name": "Light Ball",
+      "category": "held-item",
+      "cost": 1000,
+      "description": "If held by Pikachu, boosts Attack and Special Attack.",
+      "flavorText": "A puzzling orb that boosts Pikachu's Attack and Sp. Atk.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["light ball", "light-ball"]
+    },
+    "light-clay": {
+      "key": "light-clay",
+      "name": "Light Clay",
+      "category": "held-item",
+      "cost": null,
+      "description": "Extends the duration of protective screen effects such as Reflect and Light Screen.",
+      "flavorText": "Makes protective screens last longer.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["light clay", "light-clay"]
+    },
+    "magnet": {
+      "key": "magnet",
+      "name": "Magnet",
+      "category": "held-item",
+      "cost": 700,
+      "description": "Boosts the power of Electric-type moves.",
+      "flavorText": "A powerful magnet that strengthens Electric-type moves.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["magnet"]
+    },
+    "mental-herb": {
+      "key": "mental-herb",
+      "name": "Mental Herb",
+      "category": "held-item",
+      "cost": 1000,
+      "description": "Removes move-binding effects from the holder. Can be used only once.",
+      "flavorText": "Lets the holder shake off move-binding effects once.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["mental herb", "mental-herb"]
+    },
+    "metal-coat": {
+      "key": "metal-coat",
+      "name": "Metal Coat",
+      "category": "held-item",
+      "cost": 700,
+      "description": "Boosts the power of Steel-type moves.",
+      "flavorText": "A special metallic film that strengthens Steel-type moves.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["metal coat", "metal-coat"]
+    },
+    "metronome": {
+      "key": "metronome",
+      "name": "Metronome",
+      "category": "held-item",
+      "cost": null,
+      "description": "Boosts the power of a move used repeatedly. The boost resets when a different move is used.",
+      "flavorText": "Boosts a move that is used repeatedly.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["metronome"]
+    },
+    "miracle-seed": {
+      "key": "miracle-seed",
+      "name": "Miracle Seed",
+      "category": "held-item",
+      "cost": 700,
+      "description": "Boosts the power of Grass-type moves.",
+      "flavorText": "A seed imbued with life-force that strengthens Grass-type moves.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["miracle seed", "miracle-seed"]
+    },
+    "muscle-band": {
+      "key": "muscle-band",
+      "name": "Muscle Band",
+      "category": "held-item",
+      "cost": null,
+      "description": "Slightly boosts the power of physical moves.",
+      "flavorText": "A headband that slightly strengthens physical moves.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["muscle band", "muscle-band"]
+    },
+    "mystic-water": {
+      "key": "mystic-water",
+      "name": "Mystic Water",
+      "category": "held-item",
+      "cost": 700,
+      "description": "Boosts the power of Water-type moves.",
+      "flavorText": "A teardrop-shaped gem that strengthens Water-type moves.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["mystic water", "mystic-water"]
+    },
+    "never-melt-ice": {
+      "key": "never-melt-ice",
+      "name": "Never-Melt Ice",
+      "category": "held-item",
+      "cost": 700,
+      "description": "Boosts the power of Ice-type moves.",
+      "flavorText": "A heat-repelling piece of ice that strengthens Ice-type moves.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["never melt ice", "never-melt ice", "never-melt-ice"]
+    },
+    "poison-barb": {
+      "key": "poison-barb",
+      "name": "Poison Barb",
+      "category": "held-item",
+      "cost": 700,
+      "description": "Boosts the power of Poison-type moves.",
+      "flavorText": "A small poisonous barb that strengthens Poison-type moves.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["poison barb", "poison-barb"]
+    },
+    "quick-claw": {
+      "key": "quick-claw",
+      "name": "Quick Claw",
+      "category": "held-item",
+      "cost": null,
+      "description": "May allow the holder to move first.",
+      "flavorText": "A light, sharp claw that may let the holder move first.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["quick claw", "quick-claw"]
+    },
+    "scope-lens": {
+      "key": "scope-lens",
+      "name": "Scope Lens",
+      "category": "held-item",
+      "cost": 1000,
+      "description": "Boosts the holder's critical-hit ratio.",
+      "flavorText": "A lens that helps the holder land critical hits.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["scope lens", "scope-lens"]
+    },
+    "sharp-beak": {
+      "key": "sharp-beak",
+      "name": "Sharp Beak",
+      "category": "held-item",
+      "cost": 700,
+      "description": "Boosts the power of Flying-type moves.",
+      "flavorText": "A long, sharp beak that strengthens Flying-type moves.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["sharp beak", "sharp-beak"]
+    },
+    "sitrus-berry": {
+      "key": "sitrus-berry",
+      "name": "Sitrus Berry",
+      "category": "berry",
+      "cost": null,
+      "description": "Restores HP when the holder's HP gets low.",
+      "flavorText": "A Berry that restores the holder's HP when health gets low.",
+      "source": "manual-pokemon-champions",
+      "aliases": ["sitrus berry", "sitrus", "sitrus-berry"]
+    }
+  }
+}
