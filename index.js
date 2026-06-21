@@ -184,10 +184,16 @@ function getFormatLabel(format) {
 
 async function sendPublicThenDeletePrivate(interaction, payload) {
   try {
-    const channel = interaction.channel;
+    const channel =
+      interaction.channel ||
+      (interaction.channelId
+        ? await client.channels.fetch(interaction.channelId)
+        : null);
 
-    if (!channel) {
-      return interaction.editReply("⚠️ I could not find the channel to post in.");
+    if (!channel || !channel.isTextBased()) {
+      return interaction.editReply(
+        "⚠️ I found the reference, but I could not access this channel. Check that Deckachu has View Channel and Send Messages permissions."
+      );
     }
 
     await channel.send(payload);
@@ -203,7 +209,7 @@ async function sendPublicThenDeletePrivate(interaction, payload) {
     console.error("Could not send public message:", sendErr);
 
     return interaction.editReply(
-      "⚠️ I found the reference, but I could not post it publicly. Check that Deckachu has permission to send messages in this channel."
+      "⚠️ I found the reference, but I could not post it publicly. Check that Deckachu has View Channel and Send Messages permissions."
     );
   }
 }
